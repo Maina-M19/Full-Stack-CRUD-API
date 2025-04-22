@@ -26,3 +26,5 @@ friends.Database
 #Dependency directories
 node_modules/
 /dist/
+
+/coverage.xml

@@ -9,7 +9,7 @@ pipeline {
    stages {
        stage('Checkout') {
            steps {
-               git 'https://github.com/Maina-M/Full-Stack-CRUD-API.git'
+               git 'https://github.com/Maina-M19/Full-Stack-CRUD-API.git'
            }
        }
        stage('Backend Setup') {
@@ -52,16 +52,15 @@ pipeline {
        }
        stage('Docker Build') {
            steps {
-                    sh 'docker build -t maina19/fullstack-backend ./backend'
-                    sh 'docker build -t maina19/fullstack-frontend ./frontend'
-                }
-               
-           }
-       }
+                sh 'docker build -t maina19/fullstack-backend ./backend'
+                sh 'docker build -t maina19/fullstack-frontend ./frontend'
+            }
+        }
        stage('Deploy via Ansible') {
            steps {
                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]){
                sh 'wsl ansible-playbook ansible/deploy.yml'
+               }
            }
        }
    }

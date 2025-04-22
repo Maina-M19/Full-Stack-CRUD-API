@@ -15,51 +15,52 @@ pipeline {
        stage('Backend Setup') {
            steps {
                dir('backend') {
-                   sh 'pip install --upgrade pip'
-                   sh 'pip install poetry'
-                   sh 'poetry install --no-root'
+                   bat 'pip install --upgrade pip'
+                   bat 'pip install poetry'
+                   bat 'poetry lock'
+                   bat 'poetry install --no-root'
                }
            }
        }
        stage('Frontend Setup') {
            steps {
                dir('frontend') {
-                   sh 'npm install'
-                   sh 'npm run build'
+                   bat 'npm install'
+                   bat 'npm run build'
                }
            }
        }
        stage('Run Backend Tests') {
            steps {
                dir('backend') {
-                   sh 'pytest --cov=app --cov-report=xml:coverage.xml'
+                   bat 'pytest --cov=app --cov-report=xml:coverage.xml'
                }
            }
        }
        stage('Run Frontend Tests') {
            steps {
                dir('frontend') {
-                   sh 'npm run test -- --coverage'
+                   bat 'npm run test -- --coverage'
                }
            }
        }
        stage('SonarCloud Analysis') {
            steps {
                withSonarQubeEnv('SonarCloud') {
-                   sh 'sonar-scanner'
+                   bat 'sonar-scanner'
                }
            }
        }
        stage('Docker Build') {
            steps {
-                sh 'docker build -t maina19/fullstack-backend ./backend'
-                sh 'docker build -t maina19/fullstack-frontend ./frontend'
+                bat 'docker build -t maina19/fullstack-backend ./backend'
+                bat 'docker build -t maina19/fullstack-frontend ./frontend'
             }
         }
        stage('Deploy via Ansible') {
            steps {
                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]){
-               sh 'wsl ansible-playbook ansible/deploy.yml'
+               bat 'wsl ansible-playbook ansible/deploy.yml'
                }
            }
        }

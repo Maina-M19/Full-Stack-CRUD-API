@@ -17,7 +17,7 @@ pipeline {
                dir('backend') {
                    sh 'pip install --upgrade pip'
                    sh 'pip install poetry'
-                   sh 'poetry install'
+                   sh 'poetry install --no-root'
                }
            }
        }

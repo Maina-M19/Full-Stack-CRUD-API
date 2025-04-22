@@ -7,9 +7,9 @@
         password: "{{ lookup('env','DOCKER_HUB_PASS') }}"
     - name: Push Backend Image
       community.docker.docker_image:
-        name: yourdockerhub/fullstack-backend
+        name: maina19/fullstack-backend
         push: true
     - name: Push Frontend Image
       community.docker.docker_image:
-       name: yourdockerhub/fullstack-frontend
+       name: maina19/fullstack-frontend
        push: true

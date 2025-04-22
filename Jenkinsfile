@@ -2,8 +2,6 @@ pipeline {
    agent any
    environment {
        SONAR_TOKEN = credentials('sonar-token')
-       DOCKER_HUB_USER = credentials('dockerhub-username')
-       DOCKER_HUB_PASS = credentials('dockerhub-password')
    }
    tools {
        nodejs 'NodeJS 18'
@@ -18,6 +16,7 @@ pipeline {
        stage('Backend Setup') {
            steps {
                dir('backend') {
+                   sh 'pip install --upgrade pip'
                    sh 'pip install poetry'
                    sh 'poetry install'
                }
@@ -54,12 +53,15 @@ pipeline {
        }
        stage('Docker Build') {
            steps {
-               sh 'docker build -t yourdockerhub/fullstack-backend ./backend'
-               sh 'docker build -t yourdockerhub/fullstack-frontend ./frontend'
+                    sh 'docker build -t maina19/fullstack-backend ./backend'
+                    sh 'docker build -t maina19/fullstack-frontend ./frontend'
+                }
+               
            }
        }
        stage('Deploy via Ansible') {
            steps {
+               withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]){
                sh 'wsl ansible-playbook ansible/deploy.yml'
            }
        }

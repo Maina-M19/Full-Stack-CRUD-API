@@ -38,6 +38,13 @@ pipeline {
                }
            }
        }
+       stage('Run Frontend Tests') {
+           steps {
+               dir('frontend') {
+                   sh 'npm run test -- --coverage'
+               }
+           }
+       }
        stage('SonarCloud Analysis') {
            steps {
                withSonarQubeEnv('SonarCloud') {

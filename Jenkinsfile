@@ -5,7 +5,6 @@ pipeline {
    }
    tools {
        nodejs 'NodeJS 18'
-       python 'Python 3.10'
    }
    stages {
        stage('Checkout') {

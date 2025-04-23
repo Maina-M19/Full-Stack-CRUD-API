@@ -19,4 +19,3 @@ package-mode = false
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
 pytest-cov = "^6.1.1"
-

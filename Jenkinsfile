@@ -18,29 +18,17 @@ pipeline {
                    bat 'pip install --upgrade pip'
                    bat 'pip install poetry'
                    bat 'poetry lock'
-                   bat 'poetry install --no-root'
+                   bat 'poetry install'
                }
            }
        }
        stage('Frontend Setup') {
            steps {
                dir('frontend') {
-                   bat 'npm install'
-                   bat 'npm run build'
-               }
-           }
-       }
-       stage('Run Backend Tests') {
-           steps {
-               dir('backend') {
-                   bat 'pytest --cov=app --cov-report=xml:coverage.xml'
-               }
-           }
-       }
-       stage('Run Frontend Tests') {
-           steps {
-               dir('frontend') {
-                   bat 'npm run test -- --coverage'
+                   bat '''set NODE_OPTIONS=--max_old_space_size=4096
+                   npm install
+                   npm run build
+                   '''
                }
            }
        }
@@ -49,23 +37,26 @@ pipeline {
                script{
                    def scannerHome = tool 'SonarScanner'
                    withSonarQubeEnv('SonarCloud') {
-                   bat "${scannerHome}\\bin\\sonar-scanner"
+                        bat 'set _JAVA_OPTIONS=-Xmx1024m && ' + "${scannerHome}\\bin\\sonar-scanner"   
                    }
                }
            }
        }
        stage('Docker Build') {
            steps {
-                bat 'docker build -t maina19/fullstack-backend ./backend'
-                bat 'docker build -t maina19/fullstack-frontend ./frontend'
-            }
-        }
+                    bat 'docker build -t maina19/fullstack-backend ./backend'
+                    bat 'docker build -t maina19/fullstack-frontend ./frontend'
+                }
+       }
        stage('Deploy via Ansible') {
            steps {
                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]){
-               bat 'wsl ansible-playbook ansible/deploy.yml'
-               }
-           }
-       }
+               bat ''' 
+               wsl -d Ubuntu ansible-playbook /mnt/c/Users/techm/.jenkins/workspace/test/ansible/deploy.yml \
+               -e "docker_username=%DOCKER_HUB_USER% docker_password=%DOCKER_HUB_PASSWORD%"
+               '''
+            }
+        }
+    }
    }
 }

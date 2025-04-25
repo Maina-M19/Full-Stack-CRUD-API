@@ -8,8 +8,12 @@
     - name: Push Backend Image
       community.docker.docker_image:
         name: maina19/fullstack-backend
+        tag: latest
+        source: local
         push: true
     - name: Push Frontend Image
       community.docker.docker_image:
        name: maina19/fullstack-frontend
+       tag: latest
+       source: local
        push: true

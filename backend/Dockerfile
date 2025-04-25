@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . .
 RUN pip install poetry
 RUN poetry config virtualenvs.create false && poetry install
-CMD ["python", "main.py"]
+CMD ["python", "app.py"]
